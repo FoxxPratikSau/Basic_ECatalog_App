@@ -3,7 +3,11 @@
 import 'package:firebase_core/firebase_core.dart';
 import "package:flutter/material.dart";
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_application_1/Pages/login_page.dart';
 import 'package:flutter_application_1/firebase_options.dart';
+import 'package:flutter_application_1/utils/routes.dart';
+import 'package:velocity_x/velocity_x.dart';
+
 class Register extends StatefulWidget {
   const Register({Key? key}) : super(key: key);
 
@@ -45,44 +49,56 @@ class _RegisterState extends State<Register> {
           switch (snapshot.connectionState) {
             case ConnectionState.done:
               // TODO: Handle this case.
-              return Column(
-                children: [
-                  TextField(
-                    enableSuggestions: false,
-                    autocorrect: false,
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: InputDecoration(
-                      hintText: "email",
-                      labelText: "email",
-                    ),
-                    controller: _email,
-                  ),
-                  TextField(
-                    obscureText: true,
-                    enableSuggestions: false,
-                    autocorrect: false,
-                    decoration: InputDecoration(
-                      hintText: "password",
-                      labelText: "password",
-                    ),
-                    controller: _password,
-                  ),
-                  TextButton(
-                    onPressed: () async {
-                      final email = _email.text;
-                      final password = _password.text;
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(18.0),
+                  child: Column(
+                    children: [
+                      TextField(
+                        enableSuggestions: false,
+                        autocorrect: false,
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: InputDecoration(
+                          hintText: "email",
+                          labelText: "email",
+                        ),
+                        controller: _email,
+                      ),
+                      TextField(
+                        obscureText: true,
+                        enableSuggestions: false,
+                        autocorrect: false,
+                        decoration: InputDecoration(
+                          hintText: "password",
+                          labelText: "password",
+                        ),
+                        controller: _password,
+                      ),
+                      ElevatedButton(
+                        onPressed: () async {
+                          final email = _email.text;
+                          final password = _password.text;
 
-                      final UserCredential = await FirebaseAuth.instance
-                          .createUserWithEmailAndPassword(
-                              email: email, password: password);
-                      print(UserCredential);
-                    },
-                    child: const Text('Register'),
-                  )
-                ],
+                          final UserCredential = await FirebaseAuth.instance
+                              .createUserWithEmailAndPassword(
+                                  email: email, password: password);
+                          print(UserCredential);
+                        },
+                        child: const Text('Register'),
+                      ),
+                      TextButton(
+                        onPressed: ()  {
+                          //await Future.delayed(Duration(milliseconds: 10));
+                           Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginPage()));
+                        },
+                        child: const Text('already a user?'),
+                      )
+                    ],
+                  ),
+                ),
               );
             default:
-              return const Text("loading...");
+              return CircularProgressIndicator().centered().expand();
           }
         },
       ),

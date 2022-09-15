@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/Pages/register_page.dart';
 import 'package:flutter_application_1/utils/routes.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -8,159 +9,201 @@ import 'package:firebase_core/firebase_core.dart';
 
 // ctrl+space to see properties
 
-class LoginPage extends StatefulWidget  {
-  const LoginPage({ Key? key }) : super(key: key);
+class LoginPage extends StatefulWidget {
+  const LoginPage({Key? key}) : super(key: key);
 
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
-String name="";
-bool changeButton = false;
-final formKey = GlobalKey<FormState>();
+  late final TextEditingController _email;
+  late final TextEditingController _password;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    _email = TextEditingController();
+    _password = TextEditingController();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _email.dispose();
+    _password.dispose();
+    super.dispose();
+  }
+
+  String name = "";
+  bool changeButton = false;
+  final formKey = GlobalKey<FormState>();
 //final _formKey.currentState!.validate();
-moveToHome(BuildContext context)async{
-    if (formKey.currentState!.validate()){
+  moveToHome(BuildContext context) async {
+    if (formKey.currentState!.validate()) {
       setState(() {
         changeButton = true;
       });
       await Future.delayed(Duration(milliseconds: 10));
-                          //async.....await
-                          //to delay for animation to complete
-      await Navigator.pushNamed(context, MyRoutes.homeRoute); 
-                          //used await here to make ux better then 
-                          //comming back from home screen make the button loginable again
+      final email = _email.text;
+      final password = _password.text;
+
+      final UserCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
+      //async.....await
+      //to delay for animation to complete
+      await Navigator.pushNamed(context, MyRoutes.homeRoute);
+      //used await here to make ux better then
+      //comming back from home screen make the button loginable again
       setState(() {
-        changeButton=false;
+        changeButton = false;
       });
     }
- 
-}
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Material(  
-      
-      color: context.canvasColor,
-      child: SingleChildScrollView(
-        child: Form(
-          key: formKey,
-          child: Column(
-            children: [
-              Image.asset("assets/images/undraw_heavy_box_agqi.png",
-              fit: BoxFit.fill,
-              ),
-              SizedBox(height: 20.0,  //sized box for giving gaps
-              ),
-              
-              Text("Welcome ",
-               style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
+    return Material(
+        color: context.canvasColor,
+        child: SingleChildScrollView(
+          child: Form(
+            key: formKey,
+            child: Column(
+              children: [
+                Image.asset(
+                  "assets/images/undraw_heavy_box_agqi.png",
+                  fit: BoxFit.fill,
                 ),
-              ),
-              
-              SizedBox(height: 20.0,  //sized box for giving gaps
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 32.0, horizontal: 50.0,),//use .all for all direction
-                child: Column(children: [
-                  TextFormField(
-                    decoration: InputDecoration(
-                      hintText: "Enter Email id",
-                      labelText: "Email",
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter email id';
-                      }
-                        return null;
-                      
-                    },
-                    onChanged: (value){
-                      //name = value;
-                      setState(() {
-                        //calls build method as usually, while converting from stateless 
-                        //to stateful widget 
-                        //it does not calls build method but all the ui is in build method
-                      });
-                    },
+                SizedBox(
+                  height: 20.0, //sized box for giving gaps
+                ),
+                Text(
+                  "Welcome ",
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
                   ),
-                  TextFormField(
-                    obscureText: true, // to make * in pass word field
-                    decoration: InputDecoration(
-                      hintText: "Enter Password",
-                      labelText: "Password",
-                    ),
-                    //maxLength: 6,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter password';
-                      }
-                        return null;
-                      
-                    },
-                  ),
-                  SizedBox(
-                    height: 40.0,
-                  ),
-
-                  //BUtton
-                  Material( //gave ancestor of material, while giving ancestor avoid giving decoration side child
-                    // ignore: deprecated_member_use
-                    color: context.theme.buttonColor,
-                          //shape: changeButton ? BoxShape.circle : BoxShape.rectangle,
-                          borderRadius: BorderRadius.circular(changeButton?50:8), //to get ripple effect in material
-                    child: InkWell(
-                      onTap: ()=>moveToHome(context),
-                      child: AnimatedContainer(
-                        duration: Duration(milliseconds: 10 ),
-                        width: changeButton ? 50:150,
-                        height: 50,
-                        alignment:Alignment.center ,
-                        child: changeButton 
-                          ? Icon(
-                            Icons.done,
-                            color: Colors.white,
-                          ) 
-                          :Text(
-                            "Login",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                            ),
-                              
-                          ),
-                        // decoration: BoxDecoration(
-                          // color: Colors.deepPurple,
-                          // //shape: changeButton ? BoxShape.circle : BoxShape.rectangle,
-                          // borderRadius: BorderRadius.circular(changeButton?50:8),
-                        // ),
+                ),
+                SizedBox(
+                  height: 20.0, //sized box for giving gaps
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 32.0,
+                    horizontal: 50.0,
+                  ), //use .all for all direction
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        enableSuggestions: false,
+                        autocorrect: false,
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: InputDecoration(
+                          hintText: "Enter Email id",
+                          labelText: "Email",
+                        ),
+                        controller: _email,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter email id';
+                          }
+                          return null;
+                        },
+                        onChanged: (value) {
+                          //name = value;
+                          setState(() {
+                            //calls build method as usually, while converting from stateless
+                            //to stateful widget
+                            //it does not calls build method but all the ui is in build method
+                          });
+                        },
                       ),
-                    ),
-                  )
-        
-        
-                // ElevatedButton(
-                //   child: Text("   Login    "),
-                  
-                //   style: TextButton.styleFrom(minimumSize: Size(140, 40)),
-                //   onPressed: (){
-                //     final isValidForm= formKey.currentState!.validate();
-                //    if (isValidForm) {
-                //       Navigator.pushNamed(context, MyRoutes.homeRoute);
-                //     }  
-                //   },
-                //   ),
-                ],),
-              )
-            ],
+                      TextFormField(
+                        obscureText: true, // to make * in pass word field
+                        enableSuggestions: false,
+                        autocorrect: false,
+                        decoration: InputDecoration(
+                          hintText: "Enter Password",
+                          labelText: "Password",
+                        ),
+                        controller: _password,
+                        //maxLength: 6,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter password';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(
+                        height: 40.0,
+                      ),
+
+                      //BUtton
+                      Material(
+                        //gave ancestor of material, while giving ancestor avoid giving decoration side child
+                        // ignore: deprecated_member_use
+                        color: context.theme.buttonColor,
+                        //shape: changeButton ? BoxShape.circle : BoxShape.rectangle,
+                        borderRadius: BorderRadius.circular(changeButton
+                            ? 50
+                            : 8), //to get ripple effect in material
+                        child: InkWell(
+                          onTap: () => moveToHome(context),
+                          child: AnimatedContainer(
+                            duration: Duration(milliseconds: 10),
+                            width: changeButton ? 50 : 150,
+                            height: 50,
+                            alignment: Alignment.center,
+                            child: changeButton
+                                ? Icon(
+                                    Icons.done,
+                                    color: Colors.white,
+                                  )
+                                : Text(
+                                    "Login",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                            // decoration: BoxDecoration(
+                            // color: Colors.deepPurple,
+                            // //shape: changeButton ? BoxShape.circle : BoxShape.rectangle,
+                            // borderRadius: BorderRadius.circular(changeButton?50:8),
+                            // ),
+                          ),
+                        ),
+                      ),
+                      TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Register()));
+                          },
+                          child: const Text("don't have an account?"))
+
+                      // ElevatedButton(
+                      //   child: Text("   Login    "),
+
+                      //   style: TextButton.styleFrom(minimumSize: Size(140, 40)),
+                      //   onPressed: (){
+                      //     final isValidForm= formKey.currentState!.validate();
+                      //    if (isValidForm) {
+                      //       Navigator.pushNamed(context, MyRoutes.homeRoute);
+                      //     }
+                      //   },
+                      //   ),
+                    ],
+                  ),
+                )
+              ],
+            ),
           ),
-        ),
-      )
-    );
+        ));
   }
 }
 // mixin InputValidationMixin {
